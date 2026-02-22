@@ -1,0 +1,7 @@
+.DS_Store
+.venv/
+input/
+output/
+tmp/
+scripts/
+*.backup.txt

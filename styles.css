@@ -1,0 +1,554 @@
+:root {
+  --bg: #f5f8ff;
+  --surface: #ffffff;
+  --ink: #1f2a44;
+  --ink-soft: #4a5775;
+  --line: #dae3f6;
+  --brand: #ff8a3d;
+  --brand-dark: #e86818;
+  --mint: #27b8a3;
+  --sun: #ffd24d;
+  --danger: #ff5f5f;
+  --radius: 18px;
+  --shadow: 0 12px 30px rgba(31, 42, 68, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Noto Sans KR", sans-serif;
+  color: var(--ink);
+  background: radial-gradient(circle at 15% 20%, #fff4de 0, transparent 30%),
+    radial-gradient(circle at 85% 10%, #e3f9ff 0, transparent 35%), var(--bg);
+  min-height: 100vh;
+  padding: 24px 16px 48px;
+  position: relative;
+}
+
+.bg-shape {
+  position: fixed;
+  z-index: -1;
+  filter: blur(0.5px);
+  opacity: 0.65;
+}
+
+.bg-shape-left {
+  width: 260px;
+  height: 260px;
+  border-radius: 48% 52% 33% 67% / 42% 42% 58% 58%;
+  left: -80px;
+  bottom: -60px;
+  background: linear-gradient(120deg, #ffd24d, #ff8a3d);
+}
+
+.bg-shape-right {
+  width: 300px;
+  height: 300px;
+  border-radius: 65% 35% 54% 46% / 56% 52% 48% 44%;
+  right: -100px;
+  top: -120px;
+  background: linear-gradient(120deg, #9ce6ff, #67c6ff);
+}
+
+.site-header {
+  max-width: 1200px;
+  margin: 0 auto 18px;
+}
+
+.badge {
+  display: inline-block;
+  margin: 0;
+  padding: 6px 12px;
+  background: #1f2a44;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Jua", sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.site-header h1 {
+  margin: 10px 0 6px;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.app-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.tab {
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 700;
+  color: #203251;
+  background: #e7eeff;
+  cursor: pointer;
+}
+
+.tab.is-active {
+  background: linear-gradient(140deg, #ffb66f, #ff8a3d);
+  color: #fff;
+}
+
+.panel {
+  display: none;
+  animation: rise 0.22s ease;
+}
+
+.panel.is-active {
+  display: block;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.card h2,
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.helper {
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+  line-height: 1.45;
+}
+
+.helper.small {
+  font-size: 0.9rem;
+}
+
+.grid.two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+label {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+input,
+textarea,
+select {
+  border: 1px solid #cfd9f1;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.97rem;
+  font-family: inherit;
+  color: var(--ink);
+  background: #fff;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 0;
+}
+
+.inline-note {
+  align-self: center;
+  color: #2f4c86;
+  font-weight: 700;
+}
+
+.btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: linear-gradient(140deg, #30ccb4, #1fac96);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn.secondary {
+  background: #eef3ff;
+  color: #2d3c5f;
+  border: 1px solid #d3defb;
+}
+
+.btn.accent {
+  background: linear-gradient(140deg, #ffb66f, #ff8a3d);
+}
+
+#ebookFrame {
+  width: 100%;
+  height: min(70vh, 640px);
+  border: 1px solid #d8e2f8;
+  border-radius: 12px;
+  background: #fafcff;
+}
+
+.progress-wrap {
+  margin-bottom: 14px;
+}
+
+.progress-info {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.progress-info strong {
+  font-size: 1.4rem;
+  color: #1e8f7d;
+}
+
+.progress-bar {
+  margin-top: 8px;
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  background: #edf2ff;
+  overflow: hidden;
+}
+
+#progressFill {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #30ccb4, #ffb66f);
+}
+
+.section-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+
+.section-item {
+  border: 1px solid #dce6fb;
+  border-radius: 12px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  column-gap: 8px;
+  row-gap: 4px;
+  align-items: start;
+  background: #fbfdff;
+}
+
+.section-item input {
+  margin-top: 3px;
+}
+
+.section-item .title {
+  font-weight: 800;
+}
+
+.section-item .excerpt {
+  grid-column: 2;
+  color: var(--ink-soft);
+}
+
+.dictation-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.week-planner {
+  margin-top: 12px;
+  margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 8px;
+}
+
+.week-chip {
+  border: 1px solid #d4def8;
+  background: #f7f9ff;
+  color: #203251;
+  border-radius: 10px;
+  padding: 9px 10px;
+  text-align: left;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.week-chip.is-active {
+  background: #fff1e3;
+  border-color: #ffb66f;
+  color: #8b4a0e;
+}
+
+.dictation-item {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.worksheet-preview {
+  background: #f8fbff;
+}
+
+.worksheet-page {
+  width: 100%;
+  max-width: 794px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #dce6f8;
+  border-radius: 8px;
+  padding: 22px;
+}
+
+.worksheet-page header h3 {
+  margin: 0;
+}
+
+.worksheet-page header p {
+  margin: 8px 0 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: #2d3d62;
+  font-weight: 700;
+}
+
+#sheetQuestions {
+  margin: 0;
+  padding-left: 22px;
+  min-height: 420px;
+}
+
+#sheetQuestions li {
+  margin-bottom: 14px;
+  line-height: 1.35;
+  border-bottom: 1px dotted #d7e1f3;
+  padding-bottom: 8px;
+}
+
+.worksheet-page footer {
+  margin-top: 24px;
+  text-align: right;
+  color: #59698e;
+  font-size: 0.9rem;
+}
+
+.extras-full {
+  min-height: min(78vh, 920px);
+  display: flex;
+  flex-direction: column;
+}
+
+.record-sheet {
+  border: 1px solid #dbe5fb;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #fbfdff, #f4f8ff);
+  padding: 16px;
+}
+
+.record-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#oneLineFeeling {
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.record-list-wrap {
+  margin-top: 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.record-list-wrap h3 {
+  margin: 0 0 8px;
+}
+
+.reading-record-list {
+  border: 1px solid #dbe5fb;
+  border-radius: 14px;
+  background: #fcfdff;
+  padding: 10px;
+  overflow: auto;
+  min-height: 220px;
+}
+
+.record-item {
+  border: 1px solid #e5ebfb;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.record-item:last-child {
+  margin-bottom: 0;
+}
+
+.record-item .meta {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  color: #4b5d84;
+  font-weight: 700;
+}
+
+.record-item .feeling {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .grid.two,
+  .record-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .worksheet-page header p {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dictation-item {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+    padding: 0;
+  }
+
+  .site-header,
+  .tabs,
+  .panel,
+  .bg-shape {
+    display: none !important;
+  }
+
+  .worksheet-page {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0;
+    padding: 15mm;
+  }
+
+}
+
+.reader-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.reading-board {
+  border: 1px solid #cfddfb;
+  border-radius: 14px;
+  background: #fffef8;
+  padding: 18px;
+  line-height: 1.85;
+}
+
+.reading-board h4 {
+  margin: 0 0 10px;
+  font-size: 1.4em;
+}
+
+.reading-board p {
+  margin: 0;
+  font-size: 1em;
+  white-space: pre-wrap;
+}
+
+.dictation-item {
+  align-items: start;
+}
+
+.dictation-item textarea {
+  min-height: 62px;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+#sheetQuestions .question-sentence {
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.45;
+  margin-bottom: 6px;
+}
+
+#sheetQuestions .practice-line {
+  border-bottom: 1px solid #9aabcf;
+  height: 22px;
+  margin-bottom: 4px;
+}
+
+@media (max-width: 900px) {
+  .reader-toolbar {
+    align-items: stretch;
+  }
+
+  .reader-toolbar label {
+    width: 100%;
+    margin-top: 4px;
+  }
+}

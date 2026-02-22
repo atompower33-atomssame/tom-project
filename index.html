@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>아톰반25기(이천매곡초 2학년) 어린왕자 학습 사이트</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-shape bg-shape-left" aria-hidden="true"></div>
+    <div class="bg-shape bg-shape-right" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <p class="badge">이천매곡초 2학년</p>
+      <h1>아톰반25기 어린왕자 학습 사이트</h1>
+      <p class="subtitle">총 27장 읽기 진도 + 장별 받아쓰기 10문항 + A4 쓰기 연습 학습지</p>
+    </header>
+
+    <main class="app-shell">
+      <nav class="tabs" aria-label="학습 탭">
+        <button class="tab is-active" data-tab="ebook">큰글 읽기</button>
+        <button class="tab" data-tab="progress">읽기 체크</button>
+        <button class="tab" data-tab="dictation">받아쓰기/학습지</button>
+        <button class="tab" data-tab="extras">추가 활동</button>
+      </nav>
+
+      <section class="panel is-active" id="tab-ebook">
+        <div class="card">
+          <h2>원문 불러오기 (27장 구성)</h2>
+          <p class="helper">
+            링크 본문/그림의 이용허락은 선생님이 직접 확인해 주세요. 사이트는 합법적으로 확보한 텍스트를 붙여넣거나 업로드하면 27장 학습 구조로 자동 변환합니다.
+          </p>
+
+          <div class="grid two">
+            <div class="field">
+              <label for="ebookUrl">전자책/원문 링크</label>
+              <input id="ebookUrl" type="url" placeholder="https:// ..." />
+              <div class="row-actions">
+                <button id="openEbookBtn" class="btn">화면에 열기</button>
+                <button id="openNewTabBtn" class="btn secondary">새 탭 열기</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="textFile">텍스트 업로드 (.txt)</label>
+              <input id="textFile" type="file" accept=".txt,text/plain" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="bookText">본문 붙여넣기</label>
+            <textarea id="bookText" rows="8" placeholder="어린왕자 전체 텍스트를 붙여넣으세요. (===== PAGE n ===== 형식도 자동 정리)"></textarea>
+            <div class="row-actions">
+              <button id="saveTextBtn" class="btn">텍스트 저장</button>
+              <button id="analyzeTextBtn" class="btn accent">27장 자동 구성 + 장별 10문항 출제</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>원문 화면</h3>
+          <iframe id="ebookFrame" title="전자책 뷰어" src="about:blank" loading="lazy"></iframe>
+        </div>
+
+        <div class="card">
+          <h3>수업용 큰글 읽기판</h3>
+          <div class="reader-toolbar">
+            <button id="prevChapterBtn" class="btn secondary">이전 장</button>
+            <label for="readingChapterSelect">장 선택</label>
+            <select id="readingChapterSelect"></select>
+            <button id="nextChapterBtn" class="btn secondary">다음 장</button>
+            <label for="fontScale">글자 크기</label>
+            <input id="fontScale" type="range" min="1" max="1.9" step="0.1" />
+          </div>
+          <article id="readingBoard" class="reading-board">
+            <h4 id="readingTitle"></h4>
+            <p id="readingText"></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="tab-progress">
+        <div class="card">
+          <h2>27장 읽기 체크</h2>
+          <div class="progress-wrap">
+            <div class="progress-info">
+              <strong id="progressPercent">0%</strong>
+              <span id="progressText">0 / 27 장 완료</span>
+            </div>
+            <div class="progress-bar"><span id="progressFill"></span></div>
+          </div>
+          <div id="sectionList" class="section-list"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="tab-dictation">
+        <div class="card">
+          <h2>27주 운영 + 장별 받아쓰기 10문항</h2>
+          <p class="helper">3월 초 시작 기준으로 27주 운영표를 만들고, 각 장에서 2학년 수준의 핵심 낱말/짧은 표현 10문항(각 10글자 이내)을 자동 생성합니다.</p>
+
+          <div class="grid two">
+            <div class="field">
+              <label for="dictationChapterSelect">문제 확인 장</label>
+              <select id="dictationChapterSelect"></select>
+            </div>
+            <div class="field">
+              <label for="schoolYear">학년도</label>
+              <input id="schoolYear" type="number" min="2024" max="2100" />
+            </div>
+          </div>
+
+          <div class="grid two">
+            <div class="field">
+              <label for="termStartDate">1주차 시작일(3월 초)</label>
+              <input id="termStartDate" type="date" />
+            </div>
+            <div class="field">
+              <label for="testDate">해당 주 받아쓰기 시험일</label>
+              <input id="testDate" type="date" />
+            </div>
+          </div>
+
+          <div class="row-actions">
+            <button id="buildScheduleBtn" class="btn secondary">27주 운영표 만들기</button>
+            <span id="currentWeekInfo" class="inline-note"></span>
+          </div>
+
+          <div class="row-actions">
+            <button id="generateChapterBtn" class="btn">현재 장 10문항 재생성</button>
+            <button id="generateAllBtn" class="btn accent">1~27장 전체 10문항 생성</button>
+            <button id="saveWorksheetBtn" class="btn secondary">현재 장 저장</button>
+            <button id="printPdfBtn" class="btn">현재 장 A4 PDF</button>
+          </div>
+
+          <div id="weekPlanner" class="week-planner"></div>
+          <div id="dictationList" class="dictation-list"></div>
+        </div>
+
+        <article class="card worksheet-preview">
+          <div class="worksheet-page" id="worksheetPage">
+            <header>
+              <h3>아톰반25기 어린왕자 받아쓰기/쓰기 연습지</h3>
+              <p>
+                <span id="sheetChapter">장: -</span>
+                <span id="sheetWeek">주차: -</span>
+                <span id="sheetDate">시험일: -</span>
+              </p>
+            </header>
+            <ol id="sheetQuestions"></ol>
+            <footer><p>이천매곡초 2학년 | 문장을 읽고, 바르게 따라 쓰며 연습해요.</p></footer>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel" id="tab-extras">
+        <div class="card extras-full">
+          <h2>읽은 기록 쓰기</h2>
+          <p class="helper">학생 이름, 읽은 날짜, 한 줄 느낌을 기록해 책 읽기 습관을 만들어요.</p>
+
+          <article class="record-sheet">
+            <div class="record-grid">
+              <div class="field">
+                <label for="studentName">학생 이름(실명)</label>
+                <input id="studentName" type="text" placeholder="예: 김민준" />
+              </div>
+              <div class="field">
+                <label for="readingDate">읽은 날짜</label>
+                <input id="readingDate" type="date" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="oneLineFeeling">한 줄 느낌</label>
+              <textarea id="oneLineFeeling" rows="4" placeholder="예: 여우와 어린 왕자의 약속이 마음에 남았어요."></textarea>
+            </div>
+
+            <div class="row-actions">
+              <button id="saveReadingRecordBtn" class="btn">기록 저장</button>
+              <button id="clearReadingRecordBtn" class="btn secondary">입력 지우기</button>
+            </div>
+          </article>
+
+          <div class="record-list-wrap">
+            <h3>저장된 읽기 기록</h3>
+            <div id="readingRecordList" class="reading-record-list"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <template id="sectionItemTemplate">
+      <label class="section-item">
+        <input type="checkbox" />
+        <span class="title"></span>
+        <small class="excerpt"></small>
+      </label>
+    </template>
+
+    <template id="dictationItemTemplate">
+      <div class="dictation-item">
+        <label></label>
+        <textarea rows="2"></textarea>
+      </div>
+    </template>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
