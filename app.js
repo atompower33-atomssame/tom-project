@@ -129,17 +129,22 @@ function initEbookControls() {
   const urlInput = $("#ebookUrl");
   const frame = $("#ebookFrame");
   const textInput = $("#bookText");
+  const directLink = $("#ebookDirectLink");
 
   urlInput.value = state.ebookUrl;
   textInput.value = state.bookText;
-  if (state.ebookUrl) frame.src = state.ebookUrl;
+  if (state.ebookUrl) {
+    frame.src = toEmbeddableViewerUrl(state.ebookUrl);
+    if (directLink) directLink.href = state.ebookUrl;
+  }
 
   $("#openEbookBtn").addEventListener("click", () => {
     const url = urlInput.value.trim();
     if (!url) return;
     state.ebookUrl = url;
     saveState();
-    frame.src = url;
+    frame.src = toEmbeddableViewerUrl(url);
+    if (directLink) directLink.href = url;
   });
 
   $("#openNewTabBtn").addEventListener("click", () => {
@@ -185,6 +190,15 @@ function initEbookControls() {
     renderWorksheetPreview();
     alert("27장 자동 구성과 장별 10문항 출제가 완료되었습니다.");
   });
+}
+
+function toEmbeddableViewerUrl(url) {
+  const normalized = (url || "").trim();
+  if (!normalized) return "about:blank";
+  if (/\.pdf(\?|$)/i.test(normalized)) {
+    return `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(normalized)}`;
+  }
+  return normalized;
 }
 
 function build27Chapters(text) {
