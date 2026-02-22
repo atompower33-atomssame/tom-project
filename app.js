@@ -1,5 +1,5 @@
 const STORAGE_KEY = "atomban25_little_prince_state_v2";
-const DEFAULT_URL = "http://songtaihyo.com/wp-content/uploads/2018/04/le_Petit_Prince_%EB%B3%B8%EB%AC%B8.pdf";
+const DEFAULT_URL = "./little_prince_full.pdf";
 const CHAPTER_COUNT = 27;
 const QUESTIONS_PER_CHAPTER = 10;
 const CURATED_CHAPTER_ITEMS = {
@@ -50,7 +50,7 @@ const defaultState = {
   chapters: createDefaultChapters(),
   readChecks: {},
   dictationByChapter: {},
-  dictationVersion: 4,
+  dictationVersion: 6,
   selectedChapter: 1,
   weekLabel: "",
   testDate: "",
@@ -70,6 +70,8 @@ function loadState() {
     if (!raw) return structuredClone(defaultState);
     const parsed = JSON.parse(raw);
     const merged = { ...structuredClone(defaultState), ...parsed };
+    const legacyDefault = "http://songtaihyo.com/wp-content/uploads/2018/04/le_Petit_Prince_%EB%B3%B8%EB%AC%B8.pdf";
+    if (!merged.ebookUrl || merged.ebookUrl === legacyDefault) merged.ebookUrl = DEFAULT_URL;
     merged.bookText = cleanBookText(merged.bookText || "");
     merged.chapters = normalizeChapters(parsed.chapters || []);
     merged.selectedChapter = Math.min(Math.max(Number(merged.selectedChapter) || 1, 1), CHAPTER_COUNT);
@@ -196,6 +198,8 @@ function toEmbeddableViewerUrl(url) {
   const normalized = (url || "").trim();
   if (!normalized) return "about:blank";
   if (/\.pdf(\?|$)/i.test(normalized)) {
+    // Local/same-origin PDF can be embedded directly.
+    if (!/^https?:\/\//i.test(normalized)) return normalized;
     return `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(normalized)}`;
   }
   return normalized;
@@ -238,7 +242,9 @@ function cleanBookText(text) {
   return text
     .replace(/\r/g, "")
     .replace(/^[ \t]*={3,}\s*PAGE\s*\d+\s*={3,}[ \t]*$/gim, "")
-    .replace(/^[ \t]*[0-9]{1,6}[ \t]*$/gm, "")
+    .replace(/^[ \t]*[0-9]{1,8}[ \t]*$/gm, "")
+    .replace(/^[\u00A0\s]*[0-9]{1,8}[\u00A0\s]*$/gm, "")
+    .replace(/^[ \t]*[0-9]{2,4}\s+[0-9]{2,4}[ \t]*$/gm, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
@@ -928,11 +934,17 @@ function escapeHtml(value) {
 }
 
 async function preloadBundledTextIfEmpty() {
-  if ((state.bookText || "").trim()) return;
+  const current = (state.bookText || "").trim();
+  const needsRefresh =
+    !current ||
+    current.length < 25000 ||
+    /={3,}\s*PAGE\s*\d+\s*={3,}/i.test(current) ||
+    /\n[\u00A0\s]*[0-9]{4,8}[\u00A0\s]*\n/.test(current);
+  if (!needsRefresh) return;
   try {
     const res = await fetch("./little_prince_paste_source.txt", { cache: "no-store" });
     if (!res.ok) return;
-    const text = (await res.text()).trim();
+    const text = cleanBookText((await res.text()).trim());
     if (!text) return;
     state.bookText = text;
     state.chapters = build27Chapters(text);
@@ -946,9 +958,9 @@ async function preloadBundledTextIfEmpty() {
 async function boot() {
   await preloadBundledTextIfEmpty();
 
-  if (!Object.keys(state.dictationByChapter).length || state.dictationVersion < 4) {
+  if (!Object.keys(state.dictationByChapter).length || state.dictationVersion < 6) {
     generateAllDictations();
-    state.dictationVersion = 4;
+    state.dictationVersion = 6;
   }
   if (!state.termStartDate) state.termStartDate = getDefaultTermStartDate(state.schoolYear);
   if (!state.weekSchedule.length) state.weekSchedule = buildWeekSchedule(state.termStartDate);
