@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>경기도 지도 학습 자료</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">사회 4학년 지역 학습</p>
+      <h1>경기도 시·군 지도 익히기</h1>
+      <p>
+        시·군 지도를 눌러 지역 소개와 최근 자료를 확인하세요. 주요 단어를 누르면 자세한 설명이 나타납니다.
+      </p>
+    </header>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>1) 경기도 시·군 찾기</h2>
+        <div class="name-toggle">
+          <button id="showAllNamesBtn" class="clear-btn" type="button">지명 전체 보기</button>
+          <button id="hideAllNamesBtn" class="clear-btn" type="button">지명 전체 숨기기</button>
+        </div>
+      </div>
+      <p id="selectedName" class="selected-name">지도에서 시·군을 눌러 보세요.</p>
+
+      <div id="mapStage" class="map-stage">
+        <aside id="regionInfoPanel" class="region-info-panel" aria-live="polite">
+          <div class="info-head">
+            <h3 id="infoRegionName">지역 소개</h3>
+            <button id="closeInfoBtn" class="close-btn" type="button">닫기</button>
+          </div>
+          <p id="infoSummary" class="info-summary">시·군을 클릭하면 이곳에 고정 학습 자료가 나타납니다.</p>
+          <article id="keywordPreview" class="keyword-preview">
+            <p id="previewTag" class="preview-tag">학습 키워드</p>
+            <h4 id="previewTitle" class="preview-title">대표 인물</h4>
+            <p id="previewBody" class="preview-body">시·군을 선택하면 인물/특산물/문화제 설명이 이 영역에 나타납니다.</p>
+          </article>
+
+          <div id="factButtons" class="fact-buttons"></div>
+          <article class="detail-box">
+            <h4 id="detailTitle">선택한 학습 내용 요약</h4>
+            <p id="detailBody">위 키워드를 누르면 같은 내용이 요약 박스에도 함께 표시됩니다.</p>
+          </article>
+
+          <section class="news-box">
+            <h4>검증 출처</h4>
+            <ul id="sourceList" class="news-list">
+              <li class="news-item">시·군을 클릭하면 공식 출처 링크가 나타납니다.</li>
+            </ul>
+          </section>
+        </aside>
+
+        <div class="map-wrap map-wrap-main">
+          <svg id="interactiveMap" viewBox="0 0 800 760" aria-label="경기도 시군 인터랙티브 지도"></svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>4) 경기도 시·군 평가 (10문제)</h2>
+        <button id="gradeQuizBtn" class="clear-btn" type="button">채점하기</button>
+      </div>
+      <p class="selected-name">학습한 시·군 내용을 바탕으로 문제를 풀어 보세요.</p>
+      <form id="quizForm" class="quiz-form"></form>
+      <article id="quizResult" class="detail-box quiz-result">
+        <h4>결과 안내</h4>
+        <p>문제를 모두 풀고 채점하기를 눌러 주세요.</p>
+      </article>
+    </section>
+
+    <section class="practice-grid">
+      <article class="panel">
+        <div class="panel-head">
+          <h2>2) 따라 그리기: 전체 지도</h2>
+          <button class="clear-btn" data-target="traceState">지우기</button>
+        </div>
+        <div class="trace-wrap">
+          <svg id="traceState" viewBox="0 0 800 760" aria-label="경기도 전체 지도 연습"></svg>
+          <canvas id="traceStateCanvas" width="800" height="760"></canvas>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>3) 따라 그리기: 시·군 구역도</h2>
+          <button class="clear-btn" data-target="traceCity">지우기</button>
+        </div>
+        <div class="trace-wrap">
+          <svg id="traceCity" viewBox="0 0 800 760" aria-label="경기도 시군 구역도 연습"></svg>
+          <canvas id="traceCityCanvas" width="800" height="760"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <footer class="footnote">
+      <p>자료 출처: SeoulTech korea-maps GeoJSON, 각 시·군 공식 지자체/문화관광 사이트</p>
+    </footer>
+  </main>
+
+  <script src="data/gyeonggi-data.js"></script>
+  <script src="data/city-profiles.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
