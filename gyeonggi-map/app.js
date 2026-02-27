@@ -622,27 +622,47 @@ async function downloadBlankMapPdf(target) {
   const jsPDF = window.jspdf?.jsPDF;
   if (!jsPDF) throw new Error("PDF 라이브러리를 불러오지 못했습니다.");
 
-  const dataUrl = await buildTraceImageDataUrl(target);
+  const mapDataUrl = await buildTraceImageDataUrl(target);
   const title = target === "traceState" ? "경기도 전체지도 백지도" : "경기도 시군구역도 백지도(시군명 표시)";
-  const fileName = target === "traceState" ? "경기도_전체지도_백지도.pdf" : "경기도_시군구역도_백지도_시군명표시.pdf";
+  const fileName = target === "traceState" ? "gyeonggi_blank_state_map.pdf" : "gyeonggi_blank_city_map_with_labels.pdf";
 
   const pdf = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
   const pw = pdf.internal.pageSize.getWidth();
   const ph = pdf.internal.pageSize.getHeight();
 
-  pdf.setFontSize(16);
-  pdf.text(title, 24, 28);
-  pdf.setFontSize(11);
-  pdf.text("이름: ____________________   날짜: ____________________", 24, 46);
+  // jsPDF 기본 폰트는 한글 인코딩이 깨질 수 있어, 한글 텍스트를 캔버스에 먼저 그려 이미지로 합성한다.
+  const pageCanvas = document.createElement("canvas");
+  pageCanvas.width = Math.round(pw);
+  pageCanvas.height = Math.round(ph);
+  const pctx = pageCanvas.getContext("2d");
+  pctx.fillStyle = "#ffffff";
+  pctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+
+  pctx.fillStyle = "#111111";
+  pctx.font = "700 24px 'Noto Sans KR', 'Malgun Gothic', sans-serif";
+  pctx.fillText(title, 24, 34);
+  pctx.font = "16px 'Noto Sans KR', 'Malgun Gothic', sans-serif";
+  pctx.fillText("이름: ____________________", 24, 62);
+  pctx.fillText("날짜: ____________________", 420, 62);
+
+  const mapImg = new Image();
+  await new Promise((resolve, reject) => {
+    mapImg.onload = resolve;
+    mapImg.onerror = reject;
+    mapImg.src = mapDataUrl;
+  });
 
   const margin = 24;
-  const top = 58;
-  const drawW = pw - margin * 2;
-  const drawH = ph - top - margin;
+  const top = 76;
+  const drawW = pageCanvas.width - margin * 2;
+  const drawH = pageCanvas.height - top - margin;
+  pctx.strokeStyle = "#d2dcd4";
+  pctx.lineWidth = 2;
+  pctx.strokeRect(margin - 6, top - 6, drawW + 12, drawH + 12);
+  pctx.drawImage(mapImg, margin, top, drawW, drawH);
 
-  pdf.setDrawColor(210, 220, 212);
-  pdf.rect(margin - 6, top - 6, drawW + 12, drawH + 12);
-  pdf.addImage(dataUrl, "PNG", margin, top, drawW, drawH, undefined, "FAST");
+  const pageDataUrl = pageCanvas.toDataURL("image/png");
+  pdf.addImage(pageDataUrl, "PNG", 0, 0, pw, ph, undefined, "FAST");
   pdf.save(fileName);
 }
 
