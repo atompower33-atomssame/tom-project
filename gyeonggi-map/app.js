@@ -531,10 +531,17 @@ function svgToImage(svgEl) {
     clone.setAttribute("width", String(WIDTH));
     clone.setAttribute("height", String(HEIGHT));
     const svgText = new XMLSerializer().serializeToString(clone);
-    const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgText)}`;
+    const blob = new Blob([svgText], { type: "image/svg+xml;charset=utf-8" });
+    const svgUrl = URL.createObjectURL(blob);
     const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
+    img.onload = () => {
+      URL.revokeObjectURL(svgUrl);
+      resolve(img);
+    };
+    img.onerror = (err) => {
+      URL.revokeObjectURL(svgUrl);
+      reject(err);
+    };
     img.src = svgUrl;
   });
 }
@@ -570,16 +577,26 @@ async function downloadTraceImage(target) {
 }
 
 async function printTraceImage(target) {
-  const dataUrl = await buildTraceImageDataUrl(target);
   const title = target === "traceState" ? "경기도 전체지도 따라그리기" : "경기도 시군구역도 따라그리기";
   const win = window.open("", "_blank");
-  if (!win) return;
-  win.document.write(`<!doctype html><html><head><title>${title}</title><style>body{margin:0;padding:16px;font-family:sans-serif}img{max-width:100%;height:auto;display:block;margin:0 auto}</style></head><body><img src="${dataUrl}" alt="${title}" /></body></html>`);
+  if (!win) throw new Error("팝업 차단으로 인쇄 창을 열 수 없습니다.");
+  win.document.write("<!doctype html><html><head><title>인쇄 준비 중...</title></head><body>인쇄 준비 중...</body></html>");
   win.document.close();
-  win.onload = () => {
+
+  const dataUrl = await buildTraceImageDataUrl(target);
+  win.document.open();
+  win.document.write(`<!doctype html><html><head><title>${title}</title><style>body{margin:0;padding:16px;font-family:sans-serif}img{max-width:100%;height:auto;display:block;margin:0 auto}</style></head><body><img id="printImg" src="${dataUrl}" alt="${title}" /></body></html>`);
+  win.document.close();
+  const printImg = win.document.getElementById("printImg");
+  if (printImg) {
+    printImg.onload = () => {
+      win.focus();
+      win.print();
+    };
+  } else {
     win.focus();
     win.print();
-  };
+  }
 }
 
 function setupCanvasDraw(canvasId) {
