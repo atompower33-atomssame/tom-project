@@ -64,12 +64,17 @@ const defaultState = {
 
 let state = loadState();
 
+function safeClone(value) {
+  if (typeof structuredClone === "function") return structuredClone(value);
+  return JSON.parse(JSON.stringify(value));
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return structuredClone(defaultState);
+    if (!raw) return safeClone(defaultState);
     const parsed = JSON.parse(raw);
-    const merged = { ...structuredClone(defaultState), ...parsed };
+    const merged = { ...safeClone(defaultState), ...parsed };
     const legacyDefault = "http://songtaihyo.com/wp-content/uploads/2018/04/le_Petit_Prince_%EB%B3%B8%EB%AC%B8.pdf";
     if (!merged.ebookUrl || merged.ebookUrl === legacyDefault) merged.ebookUrl = DEFAULT_URL;
     merged.bookText = cleanBookText(merged.bookText || "");
@@ -89,7 +94,7 @@ function loadState() {
     }
     return merged;
   } catch {
-    const fallback = structuredClone(defaultState);
+    const fallback = safeClone(defaultState);
     fallback.termStartDate = getDefaultTermStartDate(fallback.schoolYear);
     fallback.weekSchedule = buildWeekSchedule(fallback.termStartDate);
     return fallback;
