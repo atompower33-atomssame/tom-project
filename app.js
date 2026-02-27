@@ -37,7 +37,10 @@ const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
 if (typeof window !== "undefined") {
-  const resetFlag = new URLSearchParams(window.location.search).get("reset");
+  const params = new URLSearchParams(window.location.search);
+  const resetFlag = params.get("reset");
+  const editMode = params.get("edit") === "1";
+  if (document?.body) document.body.classList.toggle("edit-mode", editMode);
   if (resetFlag === "1") {
     LEGACY_STORAGE_KEYS.forEach((k) => localStorage.removeItem(k));
   }

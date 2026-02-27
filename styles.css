@@ -91,6 +91,14 @@ h3 {
   margin: 0 auto;
 }
 
+.edit-only {
+  display: none !important;
+}
+
+body.edit-mode .edit-only {
+  display: block !important;
+}
+
 .tabs {
   display: flex;
   gap: 8px;
