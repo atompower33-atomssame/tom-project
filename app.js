@@ -753,7 +753,6 @@ function renderWorksheetPreview() {
     li.innerHTML = `
       <div class="question-sentence">${escapeHtml(q)}</div>
       <div class="practice-line"></div>
-      <div class="practice-line"></div>
     `;
     ol.appendChild(li);
   });
@@ -853,12 +852,16 @@ function initDictationControls() {
     alert(`${state.selectedChapter}장 학습지를 저장했습니다.`);
   });
 
-  $("#printPdfBtn").addEventListener("click", () => {
+  const openPrintDialog = () => {
     state.testDate = $("#testDate").value;
     saveState();
     renderWorksheetPreview();
     printAsA4(`어린왕자 ${state.selectedChapter}장 학습지`, $("#worksheetPage").innerHTML);
-  });
+  };
+
+  $("#printPdfBtn").addEventListener("click", openPrintDialog);
+  $("#worksheetPdfTopBtn").addEventListener("click", openPrintDialog);
+  $("#worksheetPrintTopBtn").addEventListener("click", openPrintDialog);
 }
 
 function printAsA4(title, innerHtml) {
@@ -883,7 +886,7 @@ function printAsA4(title, innerHtml) {
           ol { margin: 0; padding-left: 26px; }
           li { margin-bottom: 12px; }
           .question-sentence { font-size: 18px; line-height: 1.4; margin-bottom: 8px; }
-          .practice-line { border-bottom: 1px solid #96a6c9; height: 20px; margin-bottom: 4px; }
+          .practice-line { border-bottom: 1px solid #96a6c9; height: 40px; margin-bottom: 8px; }
         </style>
       </head>
       <body>

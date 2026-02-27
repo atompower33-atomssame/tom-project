@@ -359,6 +359,10 @@ textarea {
   background: #f8fbff;
 }
 
+.worksheet-actions {
+  margin-bottom: 12px;
+}
+
 .worksheet-page {
   width: 100%;
   max-width: 794px;
@@ -561,8 +565,8 @@ textarea {
 
 #sheetQuestions .practice-line {
   border-bottom: 1px solid #9aabcf;
-  height: 22px;
-  margin-bottom: 4px;
+  height: 40px;
+  margin-bottom: 8px;
 }
 
 @media (max-width: 900px) {
