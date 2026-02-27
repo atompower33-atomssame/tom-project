@@ -37,7 +37,7 @@
           <div class="grid two">
             <div class="field">
               <label for="ebookUrl">전자책/원문 링크</label>
-              <input id="ebookUrl" type="url" placeholder="https:// ..." />
+              <input id="ebookUrl" type="text" placeholder="https:// ... 또는 ./little_prince_full.pdf" />
               <div class="row-actions">
                 <button id="openEbookBtn" class="btn">화면에 열기</button>
                 <button id="openNewTabBtn" class="btn secondary">새 탭 열기</button>
@@ -61,7 +61,15 @@
 
         <div class="card">
           <h3>원문 화면</h3>
-          <iframe id="ebookFrame" title="전자책 뷰어" src="about:blank" loading="lazy"></iframe>
+          <div class="ebook-viewer-wrap">
+            <iframe id="ebookFrame" title="전자책 뷰어" src="about:blank" loading="lazy"></iframe>
+            <object id="ebookObject" type="application/pdf" data="" aria-label="원문 PDF 뷰어">
+              <p class="helper small">
+                브라우저 내장 PDF 뷰어를 사용할 수 없습니다.
+                <a id="ebookObjectLink" href="#" target="_blank" rel="noopener noreferrer">원문 새 탭으로 열기</a>
+              </p>
+            </object>
+          </div>
           <p class="helper small">
             화면이 비어 보이면 보안 정책으로 임베드가 제한된 것입니다.
             <a id="ebookDirectLink" href="#" target="_blank" rel="noopener noreferrer">원문 새 탭으로 열기</a>

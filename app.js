@@ -1,4 +1,4 @@
-const STORAGE_KEY = "atomban25_little_prince_state_v2";
+const STORAGE_KEY = "atomban25_little_prince_state_v3";
 const DEFAULT_URL = "./little_prince_full.pdf";
 const CHAPTER_COUNT = 27;
 const QUESTIONS_PER_CHAPTER = 10;
@@ -50,7 +50,7 @@ const defaultState = {
   chapters: createDefaultChapters(),
   readChecks: {},
   dictationByChapter: {},
-  dictationVersion: 6,
+  dictationVersion: 7,
   selectedChapter: 1,
   weekLabel: "",
   testDate: "",
@@ -83,8 +83,8 @@ function loadState() {
     if (!Array.isArray(merged.weekSchedule) || merged.weekSchedule.length !== CHAPTER_COUNT) {
       merged.weekSchedule = buildWeekSchedule(merged.termStartDate);
     }
-    // If stale text (PAGE markers/noisy numbers) existed in storage, rebuild chapters from cleaned text.
-    if ((merged.bookText || "").trim()) {
+    // If stale/short chapter data existed in storage, rebuild chapters from cleaned text.
+    if ((merged.bookText || "").trim() && chaptersNeedRebuild(merged.chapters)) {
       merged.chapters = build27Chapters(merged.bookText);
     }
     return merged;
@@ -115,6 +115,14 @@ function normalizeChapters(input) {
   return result;
 }
 
+function chaptersNeedRebuild(chapters) {
+  if (!Array.isArray(chapters) || chapters.length !== CHAPTER_COUNT) return true;
+  const lengths = chapters.map((c) => (c?.content || "").replace(/\s+/g, " ").trim().length);
+  const nonEmpty = lengths.filter((n) => n >= 60).length;
+  const avg = Math.round(lengths.reduce((a, b) => a + b, 0) / CHAPTER_COUNT);
+  return nonEmpty < 20 || avg < 600;
+}
+
 function initTabs() {
   $$(".tab").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -130,14 +138,17 @@ function initTabs() {
 function initEbookControls() {
   const urlInput = $("#ebookUrl");
   const frame = $("#ebookFrame");
+  const objectEl = $("#ebookObject");
   const textInput = $("#bookText");
   const directLink = $("#ebookDirectLink");
+  const objectLink = $("#ebookObjectLink");
 
   urlInput.value = state.ebookUrl;
   textInput.value = state.bookText;
   if (state.ebookUrl) {
-    frame.src = toEmbeddableViewerUrl(state.ebookUrl);
+    renderEbookViewer(state.ebookUrl, frame, objectEl);
     if (directLink) directLink.href = state.ebookUrl;
+    if (objectLink) objectLink.href = state.ebookUrl;
   }
 
   $("#openEbookBtn").addEventListener("click", () => {
@@ -145,8 +156,9 @@ function initEbookControls() {
     if (!url) return;
     state.ebookUrl = url;
     saveState();
-    frame.src = toEmbeddableViewerUrl(url);
+    renderEbookViewer(url, frame, objectEl);
     if (directLink) directLink.href = url;
+    if (objectLink) objectLink.href = url;
   });
 
   $("#openNewTabBtn").addEventListener("click", () => {
@@ -192,6 +204,34 @@ function initEbookControls() {
     renderWorksheetPreview();
     alert("27장 자동 구성과 장별 10문항 출제가 완료되었습니다.");
   });
+}
+
+function renderEbookViewer(url, frame, objectEl) {
+  const normalized = (url || "").trim();
+  if (!normalized) {
+    frame.src = "about:blank";
+    if (objectEl) objectEl.data = "";
+    return;
+  }
+
+  const isPdf = /\.pdf(\?|$)/i.test(normalized);
+  const isExternal = /^https?:\/\//i.test(normalized);
+
+  // For local PDF on GitHub Pages, <object> rendering is more stable than iframe.
+  if (isPdf && !isExternal && objectEl) {
+    frame.style.display = "none";
+    objectEl.style.display = "block";
+    objectEl.data = normalized;
+    frame.src = "about:blank";
+    return;
+  }
+
+  frame.style.display = "block";
+  if (objectEl) {
+    objectEl.style.display = "none";
+    objectEl.data = "";
+  }
+  frame.src = toEmbeddableViewerUrl(normalized);
 }
 
 function toEmbeddableViewerUrl(url) {
@@ -939,7 +979,8 @@ async function preloadBundledTextIfEmpty() {
     !current ||
     current.length < 25000 ||
     /={3,}\s*PAGE\s*\d+\s*={3,}/i.test(current) ||
-    /\n[\u00A0\s]*[0-9]{4,8}[\u00A0\s]*\n/.test(current);
+    /\n[\u00A0\s]*[0-9]{4,8}[\u00A0\s]*\n/.test(current) ||
+    chaptersNeedRebuild(state.chapters);
   if (!needsRefresh) return;
   try {
     const res = await fetch("./little_prince_paste_source.txt", { cache: "no-store" });
@@ -958,9 +999,9 @@ async function preloadBundledTextIfEmpty() {
 async function boot() {
   await preloadBundledTextIfEmpty();
 
-  if (!Object.keys(state.dictationByChapter).length || state.dictationVersion < 6) {
+  if (!Object.keys(state.dictationByChapter).length || state.dictationVersion < 7) {
     generateAllDictations();
-    state.dictationVersion = 6;
+    state.dictationVersion = 7;
   }
   if (!state.termStartDate) state.termStartDate = getDefaultTermStartDate(state.schoolYear);
   if (!state.weekSchedule.length) state.weekSchedule = buildWeekSchedule(state.termStartDate);
