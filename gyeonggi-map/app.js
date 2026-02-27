@@ -24,6 +24,8 @@ const gradeQuizBtn = document.getElementById("gradeQuizBtn");
 const quizResult = document.getElementById("quizResult");
 const showAllNamesBtn = document.getElementById("showAllNamesBtn");
 const hideAllNamesBtn = document.getElementById("hideAllNamesBtn");
+const downloadBlankStatePdfBtn = document.getElementById("downloadBlankStatePdfBtn");
+const downloadBlankCityPdfBtn = document.getElementById("downloadBlankCityPdfBtn");
 
 let datasets = null;
 let projectPoint = null;
@@ -530,6 +532,23 @@ function svgToImage(svgEl) {
     clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     clone.setAttribute("width", String(WIDTH));
     clone.setAttribute("height", String(HEIGHT));
+
+    // Export 시 외부 CSS가 누락되어 검정색으로 보이는 문제를 막기 위해 스타일을 직접 주입한다.
+    clone.querySelectorAll(".trace-outline").forEach((el) => {
+      el.setAttribute("fill", "rgba(111,141,126,0.08)");
+      el.setAttribute("stroke", "#5f816f");
+      el.setAttribute("stroke-width", "1.1");
+    });
+    clone.querySelectorAll(".trace-city-label").forEach((el) => {
+      el.setAttribute("fill", "#315043");
+      el.setAttribute("opacity", "0.5");
+      el.setAttribute("font-size", "11");
+      el.setAttribute("font-weight", "700");
+      el.setAttribute("paint-order", "stroke");
+      el.setAttribute("stroke", "#f3faf5");
+      el.setAttribute("stroke-width", "2.5");
+    });
+
     const svgText = new XMLSerializer().serializeToString(clone);
     const blob = new Blob([svgText], { type: "image/svg+xml;charset=utf-8" });
     const svgUrl = URL.createObjectURL(blob);
@@ -597,6 +616,34 @@ async function printTraceImage(target) {
     win.focus();
     win.print();
   }
+}
+
+async function downloadBlankMapPdf(target) {
+  const jsPDF = window.jspdf?.jsPDF;
+  if (!jsPDF) throw new Error("PDF 라이브러리를 불러오지 못했습니다.");
+
+  const dataUrl = await buildTraceImageDataUrl(target);
+  const title = target === "traceState" ? "경기도 전체지도 백지도" : "경기도 시군구역도 백지도(시군명 표시)";
+  const fileName = target === "traceState" ? "경기도_전체지도_백지도.pdf" : "경기도_시군구역도_백지도_시군명표시.pdf";
+
+  const pdf = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+  const pw = pdf.internal.pageSize.getWidth();
+  const ph = pdf.internal.pageSize.getHeight();
+
+  pdf.setFontSize(16);
+  pdf.text(title, 24, 28);
+  pdf.setFontSize(11);
+  pdf.text("이름: ____________________   날짜: ____________________", 24, 46);
+
+  const margin = 24;
+  const top = 58;
+  const drawW = pw - margin * 2;
+  const drawH = ph - top - margin;
+
+  pdf.setDrawColor(210, 220, 212);
+  pdf.rect(margin - 6, top - 6, drawW + 12, drawH + 12);
+  pdf.addImage(dataUrl, "PNG", margin, top, drawW, drawH, undefined, "FAST");
+  pdf.save(fileName);
 }
 
 function setupCanvasDraw(canvasId) {
@@ -702,6 +749,24 @@ async function init() {
           alert("프린트 준비에 실패했습니다.");
         }
       });
+    });
+
+    downloadBlankStatePdfBtn.addEventListener("click", async () => {
+      try {
+        await downloadBlankMapPdf("traceState");
+      } catch (err) {
+        console.error(err);
+        alert("백지도 PDF 다운로드에 실패했습니다.");
+      }
+    });
+
+    downloadBlankCityPdfBtn.addEventListener("click", async () => {
+      try {
+        await downloadBlankMapPdf("traceCity");
+      } catch (err) {
+        console.error(err);
+        alert("백지도 PDF 다운로드에 실패했습니다.");
+      }
     });
 
     closeInfoBtn.addEventListener("click", closeInfoPanel);

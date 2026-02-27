@@ -107,6 +107,17 @@
       </article>
     </section>
 
+    <section class="panel">
+      <div class="panel-head">
+        <h2>5) 백지도 PDF 학습자료</h2>
+      </div>
+      <p class="selected-name">바로 출력해서 사용할 수 있는 백지도 PDF입니다.</p>
+      <div class="pdf-actions">
+        <button type="button" id="downloadBlankStatePdfBtn" class="clear-btn pdf-link">전체지도 백지도 PDF</button>
+        <button type="button" id="downloadBlankCityPdfBtn" class="clear-btn pdf-link">시군구역도(이름표시) PDF</button>
+      </div>
+    </section>
+
     <footer class="footnote">
       <p>자료 출처: SeoulTech korea-maps GeoJSON, 각 시·군 공식 지자체/문화관광 사이트</p>
     </footer>
@@ -114,6 +125,7 @@
 
   <script src="data/gyeonggi-data.js"></script>
   <script src="data/city-profiles.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
