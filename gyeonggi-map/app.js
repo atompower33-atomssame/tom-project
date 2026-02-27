@@ -506,7 +506,80 @@ function drawTraceMap(svgId, dataKey) {
     path.setAttribute("d", geometryPath(feature.geometry, projectPoint));
     g.appendChild(path);
   });
+
+  if (dataKey === "city") {
+    datasets.city.features.forEach((feature) => {
+      const [x, y] = centroid(feature, projectPoint);
+      const name = normalizeCityName(feature.properties.name);
+      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      label.setAttribute("class", "trace-city-label");
+      label.setAttribute("x", x.toFixed(1));
+      label.setAttribute("y", y.toFixed(1));
+      label.setAttribute("text-anchor", "middle");
+      label.textContent = name;
+      g.appendChild(label);
+    });
+  }
+
   svg.appendChild(g);
+}
+
+function svgToImage(svgEl) {
+  return new Promise((resolve, reject) => {
+    const clone = svgEl.cloneNode(true);
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    clone.setAttribute("width", String(WIDTH));
+    clone.setAttribute("height", String(HEIGHT));
+    const svgText = new XMLSerializer().serializeToString(clone);
+    const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgText)}`;
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = svgUrl;
+  });
+}
+
+async function buildTraceImageDataUrl(target) {
+  const svg = document.getElementById(target);
+  const canvas = document.getElementById(`${target}Canvas`);
+  if (!svg || !canvas) throw new Error("연습판 요소를 찾을 수 없습니다.");
+
+  const exportCanvas = document.createElement("canvas");
+  exportCanvas.width = WIDTH;
+  exportCanvas.height = HEIGHT;
+  const ctx = exportCanvas.getContext("2d");
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+  const svgImg = await svgToImage(svg);
+  ctx.drawImage(svgImg, 0, 0, WIDTH, HEIGHT);
+  ctx.drawImage(canvas, 0, 0, WIDTH, HEIGHT);
+
+  return exportCanvas.toDataURL("image/png");
+}
+
+async function downloadTraceImage(target) {
+  const dataUrl = await buildTraceImageDataUrl(target);
+  const a = document.createElement("a");
+  const fileTag = target === "traceState" ? "전체지도" : "시군구역도";
+  a.href = dataUrl;
+  a.download = `경기도_따라그리기_${fileTag}.png`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+async function printTraceImage(target) {
+  const dataUrl = await buildTraceImageDataUrl(target);
+  const title = target === "traceState" ? "경기도 전체지도 따라그리기" : "경기도 시군구역도 따라그리기";
+  const win = window.open("", "_blank");
+  if (!win) return;
+  win.document.write(`<!doctype html><html><head><title>${title}</title><style>body{margin:0;padding:16px;font-family:sans-serif}img{max-width:100%;height:auto;display:block;margin:0 auto}</style></head><body><img src="${dataUrl}" alt="${title}" /></body></html>`);
+  win.document.close();
+  win.onload = () => {
+    win.focus();
+    win.print();
+  };
 }
 
 function setupCanvasDraw(canvasId) {
@@ -589,6 +662,28 @@ async function init() {
         const target = btn.dataset.target;
         if (target === "traceState") clearState();
         if (target === "traceCity") clearCity();
+      });
+    });
+
+    document.querySelectorAll(".export-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        try {
+          await downloadTraceImage(btn.dataset.exportTarget);
+        } catch (err) {
+          console.error(err);
+          alert("이미지 다운로드에 실패했습니다.");
+        }
+      });
+    });
+
+    document.querySelectorAll(".print-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        try {
+          await printTraceImage(btn.dataset.printTarget);
+        } catch (err) {
+          console.error(err);
+          alert("프린트 준비에 실패했습니다.");
+        }
       });
     });
 

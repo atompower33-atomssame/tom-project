@@ -74,6 +74,12 @@ h2 {
   margin-bottom: 10px;
 }
 
+.trace-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .name-toggle {
   display: flex;
   gap: 6px;
@@ -357,6 +363,14 @@ svg {
   fill: rgba(111, 141, 126, 0.08);
   stroke: #5f816f;
   stroke-width: 1.1;
+}
+
+.trace-city-label {
+  fill: #3f5f4f;
+  opacity: 0.34;
+  font-size: 10px;
+  font-weight: 700;
+  pointer-events: none;
 }
 
 .trace-wrap canvas {
