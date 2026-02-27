@@ -1,4 +1,5 @@
 const STORAGE_KEY = "atomban25_little_prince_state_v3";
+const LEGACY_STORAGE_KEYS = ["atomban25_little_prince_state_v2", "atomban25_little_prince_state_v3"];
 const DEFAULT_URL = "./little_prince_full.pdf";
 const CHAPTER_COUNT = 27;
 const QUESTIONS_PER_CHAPTER = 10;
@@ -34,6 +35,13 @@ const CURATED_CHAPTER_ITEMS = {
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+if (typeof window !== "undefined") {
+  const resetFlag = new URLSearchParams(window.location.search).get("reset");
+  if (resetFlag === "1") {
+    LEGACY_STORAGE_KEYS.forEach((k) => localStorage.removeItem(k));
+  }
+}
 
 function createDefaultChapters() {
   return Array.from({ length: CHAPTER_COUNT }, (_, i) => ({
