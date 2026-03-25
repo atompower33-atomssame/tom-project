@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>표정으로 말해요 | 감정 단어 학습</title>
+    <link rel="stylesheet" href="./emotion-study.css" />
+  </head>
+  <body>
+    <div class="shape shape-a" aria-hidden="true"></div>
+    <div class="shape shape-b" aria-hidden="true"></div>
+
+    <header class="hero">
+      <p class="hero-badge">초등 2학년 감정 수업</p>
+      <h1>표정으로 말해요</h1>
+      <p class="hero-subtitle">감정 단어를 읽고, 쓰고, 표정으로 표현해요.</p>
+    </header>
+
+    <main class="app-grid">
+      <section class="card main-card" aria-live="polite">
+        <div class="toolbar">
+          <div class="filter-group" role="group" aria-label="감정 분류">
+            <button class="filter-btn is-active" data-filter="all">전체</button>
+            <button class="filter-btn" data-filter="positive">기분 좋은 감정</button>
+            <button class="filter-btn" data-filter="negative">힘든 감정</button>
+          </div>
+          <div class="action-group">
+            <button id="prevBtn" class="action-btn secondary">이전</button>
+            <button id="randomBtn" class="action-btn primary">랜덤 뽑기</button>
+            <button id="nextBtn" class="action-btn secondary">다음</button>
+          </div>
+        </div>
+
+        <p id="emotionType" class="emotion-type"></p>
+        <h2 id="emotionWord" class="emotion-word">기쁘다</h2>
+
+        <div class="expression-wrap">
+          <div id="expressionCard" class="expression-card" role="img" aria-label="감정 표정 그림"></div>
+          <div class="expression-text">
+            <h3>이 감정은 어떤 느낌일까요?</h3>
+            <p id="emotionEasy" class="easy-text"></p>
+            <p id="emotionExample" class="example-text"></p>
+          </div>
+        </div>
+
+        <div class="related-wrap">
+          <h3>관련 감정 단어</h3>
+          <div id="relatedWords" class="related-words"></div>
+        </div>
+
+        <div class="mission-wrap">
+          <h3>표정 미션</h3>
+          <p id="missionText"></p>
+        </div>
+      </section>
+
+      <section class="card side-card">
+        <h3>말해 보고, 써 봐요</h3>
+        <p class="side-guide">아래 문장틀에 지금 감정을 넣어 말하고, 한 줄로 써 봐요.</p>
+
+        <p id="readingSentence" class="reading-sentence"></p>
+
+        <label for="writingBox" class="field-label">내 문장 쓰기</label>
+        <textarea id="writingBox" rows="4" placeholder="예: 오늘 친구가 칭찬해 줘서 뿌듯했어요."></textarea>
+
+        <div class="write-actions">
+          <button id="useExampleBtn" class="action-btn secondary">예문 넣기</button>
+          <button id="saveSentenceBtn" class="action-btn primary">문장 저장</button>
+        </div>
+
+        <div class="saved-wrap">
+          <h4>내가 쓴 문장</h4>
+          <ul id="savedList" class="saved-list"></ul>
+        </div>
+
+        <div class="word-wall-wrap">
+          <h4>감정 단어 보드</h4>
+          <div id="wordWall" class="word-wall"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./emotion-study.js"></script>
+  </body>
+</html>
